@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecoglos Car Detailing | Custom Cars & Paint Protection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#00e676',
+                        dark: '#0a0a0a',
+                        darkcard: '#141414',
+                        darkborder: '#1e1e1e',
+                    },
+                    fontFamily: {
+                        outfit: ['Outfit', 'sans-serif'],
+                        bebas: ['Bebas Neue', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Outfit', sans-serif; background: #0a0a0a; color: #fff; overflow-x: hidden; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #00e676; border-radius: 4px; }
+
+        /* Hero Background */
+        .hero-bg {
+            background: linear-gradient(135deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.6) 50%, rgba(0,230,118,0.1) 100%),
+                        url('http://static.photos/automotive/1200x630/77');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* Glow effects */
+        .glow-green {
+            box-shadow: 0 0 30px rgba(0, 230, 118, 0.3), 0 0 60px rgba(0, 230, 118, 0.1);
+        }
+        .glow-green-sm {
+            box-shadow: 0 0 15px rgba(0, 230, 118, 0.2);
+        }
+        .text-glow {
+            text-shadow: 0 0 40px rgba(0, 230, 118, 0.5);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-60px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(60px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 230, 118, 0.4); }
+            50% { box-shadow: 0 0 40px rgba(0, 230, 118, 0.7); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
+        .animate-fade-in { animation: fadeIn 1s ease-out forwards; }
+        .animate-slide-left { animation: slideInLeft 0.8s ease-out forwards; }
+        .animate-slide-right { animation: slideInRight 0.8s ease-out forwards; }
+        .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        .delay-500 { animation-delay: 0.5s; }
+
+        /* Intersection Observer hidden state */
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        /* Gallery Grid */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        @media (min-width: 768px) {
+            .gallery-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .gallery-grid .gallery-item:nth-child(1) {
+                grid-column: span 2;
+                grid-row: span 2;
+            }
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            cursor: pointer;
+            aspect-ratio: 4/3;
+        }
+        .gallery-item:nth-child(1) {
+            aspect-ratio: auto;
+        }
+        .gallery-item img, .gallery-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease, filter 0.5s ease;
+        }
+        .gallery-item:hover img, .gallery-item:hover video {
+            transform: scale(1.1);
+            filter: brightness(0.7);
+        }
+        .gallery-item .overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            display: flex;
+            align-items: flex-end;
+            padding: 20px;
+        }
+        .gallery-item:hover .overlay {
+            opacity: 1;
+        }
+
+        /* Lightbox */
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0,0,0,0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+        .lightbox.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+        .lightbox img, .lightbox video {
+            max-width: 90vw;
+            max-height: 85vh;
+            border-radius: 12px;
+        }
+
+        /* Nav */
+        .nav-blur {
+            backdrop-filter: blur(20px);
+            background: rgba(10, 10, 10, 0.8);
+        }
+
+        /* Service Card */
+        .service-card {
+            background: linear-gradient(145deg, #141414 0%, #1a1a1a 100%);
+            border: 1px solid #1e1e1e;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00e676, transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .service-card:hover::before { opacity: 1; }
+        .service-card:hover {
+            border-color: rgba(0, 230, 118, 0.3);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 230, 118, 0.1);
+        }
+
+        /* Booking Form */
+        .form-input {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+        .form-input:focus {
+            border-color: #00e676;
+            box-shadow: 0 0 20px rgba(0, 230, 118, 0.15);
+            outline: none;
+        }
+
+        /* Shimmer text */
+        .shimmer-text {
+            background: linear-gradient(90deg, #00e676, #00bfa5, #00e676);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s linear infinite;
+        }
+
+        /* WhatsApp float button */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #25d366;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse-glow 2s ease-in-out infinite;
+            transition: transform 0.3s ease;
+        }
+        .whatsapp-float:hover {
+            transform: scale(1.15);
+        }
+
+        /* Stats counter */
+        .stat-number {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3.5rem;
+            line-height: 1;
+        }
+
+        /* Testimonial */
+        .testimonial-card {
+            background: linear-gradient(145deg, #141414, #1a1a1a);
+            border: 1px solid #1e1e1e;
+        }
+
+        /* Mobile menu */
+        .mobile-menu {
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+
+        /* Video play button */
+        .play-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 230, 118, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+        .gallery-item:hover .play-btn {
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 nav-blur border-b border-transparent transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <a href="#home" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center group-hover:glow-green-sm transition-all duration-300">
+                        <i data-lucide="car" class="w-6 h-6 text-black"></i>
+                    </div>
+                    <div>
+                        <span class="font-bebas text-2xl tracking-wide text-white">ECOGLOS</span>
+                        <span class="block text-[10px] text-primary tracking-[0.3em] -mt-1">CAR DETAILING</span>
+                    </div>
+                </a>
+
+                <!-- Desktop Nav -->
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="#home" class="text-sm font-medium text-gray-300 hover:text-primary transition-colors">Home</a>
+                    <a href="#services" class="text-sm font-medium text-gray-300 hover:text-primary transition-colors">Services</a>
+                    <a href="#gallery" class="text-sm font-medium text-gray-300 hover:text-primary transition-colors">Gallery</a>
+                    <a href="#about" class="text-sm font-medium text-gray-300 hover:text-primary transition-colors">About</a>
+                    <a href="#reviews" class="text-sm font-medium text-gray-300 hover:text-primary transition-colors">Reviews</a>
+                    <a href="#booking" class="bg-primary text-black font-semibold px-6 py-2.5 rounded-full hover:bg-green-400 transition-all glow-green-sm hover:glow-green text-sm">Book Now</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="menuBtn" class="md:hidden text-white p-2">
+                    <i data-lucide="menu" class="w-7 h-7"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed inset-0 z-50 bg-dark/95 backdrop-blur-xl flex flex-col items-center justify-center gap-8">
+        <button id="closeMenu" class="absolute top-6 right-6 text-white">
+            <i data-lucide="x" class="w-8 h-8"></i>
+        </button>
+        <a href="#home" class="mobile-link text-3xl font-bebas tracking-wide text-white hover:text-primary transition-colors">Home</a>
+        <a href="#services" class="mobile-link text-3xl font-bebas tracking-wide text-white hover:text-primary transition-colors">Services</a>
+        <a href="#gallery" class="mobile-link text-3xl font-bebas tracking-wide text-white hover:text-primary transition-colors">Gallery</a>
+        <a href="#about" class="mobile-link text-3xl font-bebas tracking-wide text-white hover:text-primary transition-colors">About</a>
+        <a href="#reviews" class="mobile-link text-3xl font-bebas tracking-wide text-white hover:text-primary transition-colors">Reviews</a>
+        <a href="#booking" class="mobile-link bg-primary text-black font-bold px-10 py-3 rounded-full text-lg mt-4">Book Now</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-bg min-h-screen flex items-center relative">
+        <!-- Decorative elements -->
+        <div class="absolute top-20 right-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-20 left-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 w-full">
+            <div class="max-w-3xl">
+                <div class="animate-fade-up">
+                    <span class="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+                        Premium Car Detailing in the US
+                    </span>
+                </div>
+                <h1 class="font-bebas text-5xl sm:text-7xl lg:text-8xl leading-[0.9] mb-6 animate-fade-up delay-100">
+                    CUSTOM CARS<br>
+                    <span class="shimmer-text">& PAINT PROTECTION</span>
+                </h1>
+                <p class="text-lg sm:text-xl text-gray-400 mb-8 max-w-xl animate-fade-up delay-200">
+                    Transform your vehicle with our premium detailing services. From ceramic coatings to full custom builds — we protect what you love.
+                </p>
+                <div class="flex flex-wrap gap-4 animate-fade-up delay-300">
+                    <a href="#booking" class="bg-primary text-black font-semibold px-8 py-4 rounded-full hover:bg-green-400 transition-all glow-green-sm hover:glow-green inline-flex items-center gap-2 text-base">
+                        <i data-lucide="calendar" class="w-5 h-5"></i>
+                        Schedule Appointment
+                    </a>
+                    <a href="https://wa.me/1234567890?text=Hi%20Ecoglos!%20I'm%20interested%20in%20your%20detailing%20services." target="_blank" class="border border-white/20 text-white font-semibold px-8 py-4 rounded-full hover:bg-white/10 transition-all inline-flex items-center gap-2 text-base">
+                        <i data-lucide="message-circle" class="w-5 h-5"></i>
+                        Chat on WhatsApp
+                    </a>
+                </div>
+
+                <!-- Stats -->
+                <div class="grid grid-cols-3 gap-6 mt-16 animate-fade-up delay-400">
+                    <div>
+                        <div class="stat-number text-primary" data-target="500">0</div>
+                        <div class="text-sm text-gray-500 mt-1">Cars Detailed</div>
+                    </div>
+                    <div>
+                        <div class="stat-number text-primary" data-target="8">0</div>
+                        <div class="text-sm text-gray-500 mt-1">Years Experience</div>
+                    </div>
+                    <div>
+                        <div class="stat-number text-primary" data-target="100">0</div>
+                        <div class="text-sm text-gray-500 mt-1">% Satisfaction</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll indicator -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-float">
+            <i data-lucide="chevron-down" class="w-6 h-6 text-primary/60"></i>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-24 relative">
+        <div class="absolute inset-0 bg-gradient-to-b from-dark via-darkcard to-dark"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div class="text-center mb-16 reveal">
+                <span class="text-primary text-sm font-semibold tracking-[0.2em] uppercase">What We Offer</span>
+                <h2 class="font-bebas text-4xl sm:text-6xl mt-3">OUR PREMIUM SERVICES</h2>
+                <div class="w-20 h-1 bg-primary mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Service 1 -->
+                <div class="service-card rounded-2xl p-8 reveal">
+                    <div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-6">
+                        <i data-lucide="shield-check" class="w-7 h-7 text-primary"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Paint Protection Film</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-4">Premium XPEL & SunTek PPF installation. Self-healing technology that keeps your paint safe from rocks, scratches, and road debris.</p>
+                    <span class="text-primary font-semibold text-sm">From $899</span>
+                </div>
+
+                <!-- Service 2 -->
+                <div class="service-card rounded-2xl p-8 reveal">
+                    <div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-6">
+                        <i data-lucide="droplets" class="w-7 h-7 text-primary"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Ceramic Coating</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-4">9H nano-ceramic coating that provides unmatched gloss and hydrophobic protection. Lasts up to 5 years with proper maintenance.</p>
+                    <span class="text-primary font-semibold text-sm">From $599</span>
+                </div>
+
+                <!-- Service 3 -->
+                <div class="service-card rounded-2xl p-8 reveal">
+                    <div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-6">
+                        <i data-lucide="palette" class="w-7 h-7 text-primary"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Custom Paint & Wraps</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-4">Full custom paint jobs, color changes, vinyl wraps, and chrome deletes. Make your car truly one of a kind.</p>
+                    <span class="text-primary font-semibold text-sm">From $1,500</span>
+                </div>
+
+                <!-- Service 4 -->
+                <div class="service-card rounded-2xl p-8 reveal">
+                    <div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-6">
+                        <i data-lucide="sparkles" class="w-7 h-7 text-primary"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Full Detailing</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-4">Complete interior & exterior detailing. Paint correction, leather conditioning, engine bay cleaning and more.</p>
+                    <span class="text-primary font-semibold text-sm">From $299</span>
+                </div>
+
+                <!-- Service 5 -->
+                <div class="service-card rounded-2xl p-8 reveal">
+                    <div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-6">
+                        <i data-lucide="sun" class="w-7 h-7 text-primary"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Window Tinting</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-4">Professional ceramic window tint with UV protection. Reduce heat, glare, and protect your interior from sun damage.</p>
+                    <span class="text-primary font-semibold text-sm">From $199</span>
+                </div>
+
+                <!-- Service 6 -->
+                <div class="service-card rounded-2xl p-8 reveal">
+                    <div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-6">
+                        <i data-lucide="circle-dot" class="w-7 h-7 text-primary"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Wheel & Caliper</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-4">Custom powder-coated calipers, wheel refinishing, and brake dust protection coating for a complete look.</p>
+                    <span class="text-primary font-semibold text-sm">From $249</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <span class="text-primary text-sm font-semibold tracking-[0.2em] uppercase">Our Work Speaks</span>
+                <h2 class="font-bebas text-4xl sm:text-6xl mt-3">PROJECT GALLERY</h2>
+                <div class="w-20 h-1 bg-primary mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="flex flex-wrap justify-center gap-3 mb-12 reveal">
+                <button class="gallery-filter active bg-primary text-black px-6 py-2 rounded-full text-sm font-semibold transition-all" data-filter="all">All</button>
+                <button class="gallery-filter bg-darkcard border border-darkborder text-gray-400 px-6 py-2 rounded-full text-sm font-medium hover:border-primary hover:text-primary transition-all" data-filter="ppf">PPF</button>
+                <button class="gallery-filter bg-darkcard border border-darkborder text-gray-400 px-6 py-2 rounded-full text-sm font-medium hover:border-primary hover:text-primary transition-all" data-filter="ceramic">Ceramic</button>
+                <button class="gallery-filter bg-darkcard border border-darkborder text-gray-400 px-6 py-2 rounded-full text-sm font-medium hover:border-primary hover:text-primary transition-all" data-filter="custom">Custom</button>
+                <button class="gallery-filter bg-darkcard border border-darkborder text-gray-400 px-6 py-2 rounded-full text-sm font-medium hover:border-primary hover:text-primary transition-all" data-filter="detail">Detail</button>
+            </div>
+
+            <!-- Gallery Grid -->
+            <div class="gallery-grid" id="galleryGrid">
+                <!-- Items will be populated by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Lightbox -->
+    <div id="lightbox" class="lightbox">
+        <button id="lightboxClose" class="absolute top-6 right-6 text-white/80 hover:text-white transition-colors z-10">
+            <i data-lucide="x" class="w-8 h-8"></i>
+        </button>
+        <button id="lightboxPrev" class="absolute left-6 text-white/80 hover:text-white transition-colors z-10">
+            <i data-lucide="chevron-left" class="w-10 h-10"></i>
+        </button>
+        <button id="lightboxNext" class="absolute right-6 text-white/80 hover:text-white transition-colors z-10">
+            <i data-lucide="chevron-right" class="w-10 h-10"></i>
+        </button>
+        <div id="lightboxContent" class="flex items-center justify-center"></div>
+        <div id="lightboxCaption" class="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/70 text-sm font-medium"></div>
+    </div>
+
+    <!-- About Section -->
+    <section id="about" class="py-24 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-dark via-darkcard to-dark"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="reveal">
+                    <span class="text-primary text-sm font-semibold tracking-[0.2em] uppercase">Who We Are</span>
+                    <h2 class="font-bebas text-4xl sm:text-6xl mt-3 mb-6">PASSION FOR PERFECTION</h2>
+                    <p class="text-gray-400 leading-relaxed mb-6">
+                        At <span class="text-primary font-semibold">Ecoglos Car Detailing</span>, we combine artistry with cutting-edge technology to deliver unmatched results. Our team of certified professionals treats every vehicle as if it were our own.
+                    </p>
+                    <p class="text-gray-400 leading-relaxed mb-8">
+                        Located in the heart of the United States, we've been serving car enthusiasts and everyday drivers alike for over 8 years. From paint protection film to full custom builds, we're your one-stop shop for all things automotive aesthetics.
+                    </p>
+
+                    <div class="grid grid-cols-2 gap-6 mb-8">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 text-primary flex-shrink-0"></i>
+                            <span class="text-sm text-gray-300">Certified Installers</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 text-primary flex-shrink-0"></i>
+                            <span class="text-sm text-gray-300">Premium Products</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 text-primary flex-shrink-0"></i>
+                            <span class="text-sm text-gray-300">Lifetime Warranty</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 text-primary flex-shrink-0"></i>
+                            <span class="text-sm text-gray-300">Mobile Service</span>
+                        </div>
+                    </div>
+
+                    <a href="#booking" class="bg-primary text-black font-semibold px-8 py-4 rounded-full hover:bg-green-400 transition-all glow-green-sm hover:glow-green inline-flex items-center gap-2">
+                        <i data-lucide="calendar" class="w-5 h-5"></i>
+                        Book Your Service
+                    </a>
+                </div>
+
+                <div class="relative reveal">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-4">
+                            <img src="http://static.photos/automotive/640x360/10" alt="Detailing" class="rounded-2xl w-full object-cover h-48">
+                            <img src="http://static.photos/automotive/640x360/33" alt="Custom car" class="rounded-2xl w-full object-cover h-64">
+                        </div>
+                        <div class="space-y-4 pt-8">
+                            <img src="http://static.photos/automotive/640x360/55" alt="Ceramic coating" class="rounded-2xl w-full object-cover h-64">
+                            <img src="http://static.photos/automotive/640x360/22" alt="Paint protection" class="rounded-2xl w-full object-cover h-48">
+                        </div>
+                    </div>
+                    <!-- Badge -->
+                    <div class="absolute -bottom-4 -left-4 bg-primary text-black rounded-2xl p-5 glow-green-sm">
+                        <div class="font-bebas text-4xl">8+</div>
+                        <div class="text-xs font-semibold">Years of<br>Excellence</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section id="reviews" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <span class="text-primary text-sm font-semibold tracking-[0.2em] uppercase">Testimonials</span>
+                <h2 class="font-bebas text-4xl sm:text-6xl mt-3">WHAT CLIENTS SAY</h2>
+                <div class="w-20 h-1 bg-primary mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Review 1 -->
+                <div class="testimonial-card rounded-2xl p-8 reveal">
+                    <div class="flex gap-1 mb-4">
+                        <i data-lucide="star" class="w-5 h-5 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-5 h-5 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-5 h-5 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-5 h-5 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-5 h-5 text-yellow-400 fill-yellow-400"></i>
+                    </div>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-6">"Absolutely incredible work! The ceramic coating on my Tesla looks like a mirror. The team was professional, on time, and the results exceeded my expectations. Highly recommend Ecoglos!"</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                            <span class="text-primary font-bold text-sm">JM</span>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-sm">James Mitchell</div>
+                            <div class="text-xs text-gray-500">Tesla Model 3 Owner</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review 2 -->
+                <div class="testimonial-card rounded-2xl p-8 reveal">
+                    <div class="flex gap-1 mb-4">
+                        <i data-lucide="star" class="w-5 h-5 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-5 h-5 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-5 h-5 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-5 h-5 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-5 h-5 text-yellow-400 fill-yellow-400"></i>
+                    </div>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-6">"Got full PPF on my new Porsche 911 and the quality is flawless. You can't even tell the film is there. These guys are true artists. Worth every penny for the peace of mind."</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                            <span class="text-primary font-bold text-sm">SR</span>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-sm">Sarah Rodriguez</div>
+                            <div class="text-xs text-gray-500">Porsche 911 Owner</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review 3 -->
+                <div class="testimonial-card rounded-2xl p-8 reveal">
+                    <div class="flex gap-1 mb-4">
+                        <i data-lucide="star" class="w-5 h-5 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-5 h-5 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-5 h-5 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-5 h-5 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-5 h-5 text-yellow-400 fill-yellow-400"></i>
+                    </div>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-6">"The custom wrap they did on my Dodge Challenger turns heads everywhere I go. The attention to detail is insane. They even did my calipers and window tint. One-stop shop!"</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                            <span class="text-primary font-bold text-sm">DK</span>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-sm">Derek Kim</div>
+                            <div class="text-xs text-gray-500">Dodge Challenger Owner</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Section -->
+    <section id="booking" class="py-24 relative">
+        <div class="absolute inset-0 bg-gradient-to-b from-dark via-darkcard to-dark"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div class="text-center mb-16 reveal">
+                <span class="text-primary text-sm font-semibold tracking-[0.2em] uppercase">Ready to Transform Your Ride?</span>
+                <h2 class="font-bebas text-4xl sm:text-6xl mt-3">BOOK AN APPOINTMENT</h2>
+                <div class="w-20 h-1 bg-primary mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-12">
+                <!-- Booking Form -->
+                <div class="reveal">
+                    <form id="bookingForm" class="space-y-5">
+                        <div class="grid sm:grid-cols-2 gap-5">
+                            <div>
+                                <label class="text-sm text-gray-400 mb-2 block">Full Name *</label>
+                                <input type="text" required class="form-input w-full px-4 py-3.5 rounded-xl text-sm" placeholder="John Doe">
+                            </div>
+                            <div>
+                                <label class="text-sm text-gray-400 mb-2 block">Phone Number *</label>
+                                <input type="tel" required class="form-input w-full px-4 py-3.5 rounded-xl text-sm" placeholder="+1 (555) 000-0000">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-400 mb-2 block">Email Address *</label>
+                            <input type="email" required class="form-input w-full px-4 py-3.5 rounded-xl text-sm" placeholder="john@example.com">
+                        </div>
+                        <div class="grid sm:grid-cols-2 gap-5">
+                            <div>
+                                <label class="text-sm text-gray-400 mb-2 block">Vehicle Make & Model *</label>
+                                <input type="text" required class="form-input w-full px-4 py-3.5 rounded-xl text-sm" placeholder="BMW M4 2024">
+                            </div>
+                            <div>
+                                <label class="text-sm text-gray-400 mb-2 block">Service Needed *</label>
+                                <select required class="form-input w-full px-4 py-3.5 rounded-xl text-sm appearance-none">
+                                    <option value="" class="bg-darkcard">Select a service</option>
+                                    <option value="ppf" class="bg-darkcard">Paint Protection Film</option>
+                                    <option value="ceramic" class="bg-darkcard">Ceramic Coating</option>
+                                    <option value="custom" class="bg-darkcard">Custom Paint & Wraps</option>
+                                    <option value="detail" class="bg-darkcard">Full Detailing</option>
+                                    <option value="tint" class="bg-darkcard">Window Tinting</option>
+                                    <option value="wheels" class="bg-darkcard">Wheel & Caliper</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid sm:grid-cols-2 gap-5">
+                            <div>
+                                <label class="text-sm text-gray-400 mb-2 block">Preferred Date *</label>
+                                <input type="date" required class="form-input w-full px-4 py-3.5 rounded-xl text-sm">
+                            </div>
+                            <div>
+                                <label class="text-sm text-gray-400 mb-2 block">Preferred Time *</label>
+                                <select required class="form-input w-full px-4 py-3.5 rounded-xl text-sm appearance-none">
+                                    <option value="" class="bg-darkcard">Select time</option>
+                                    <option value="9am" class="bg-darkcard">9:00 AM</option>
+                                    <option value="10am" class="bg-darkcard">10:00 AM</option>
+                                    <option value="11am" class="bg-darkcard">11:00 AM</option>
+                                    <option value="12pm" class="bg-darkcard">12:00 PM</option>
+                                    <option value="1pm" class="bg-darkcard">1:00 PM</option>
+                                    <option value="2pm" class="bg-darkcard">2:00 PM</option>
+                                    <option value="3pm" class="bg-darkcard">3:00 PM</option>
+                                    <option value="4pm" class="bg-darkcard">4:00 PM</option>
+                                    <option value="5pm" class="bg-darkcard">5:00 PM</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-400 mb-2 block">Additional Notes</label>
+                            <textarea rows="3" class="form-input w-full px-4 py-3.5 rounded-xl text-sm resize-none" placeholder="Tell us more about what you need..."></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-primary text-black font-bold py-4 rounded-xl hover:bg-green-400 transition-all glow-green-sm hover:glow-green flex items-center justify-center gap-2 text-base">
+                            <i data-lucide="calendar-check" class="w-5 h-5"></i>
+                            Confirm Booking
+                        </button>
+                    </form>
+
+                    <!-- Success message -->
+                    <div id="bookingSuccess" class="hidden text-center py-12">
+                        <div class="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i data-lucide="check" class="w-10 h-10 text-primary"></i>
+                        </div>
+                        <h3 class="font-bebas text-3xl mb-2">BOOKING CONFIRMED!</h3>
+                        <p class="text-gray-400 text-sm">We'll contact you shortly to confirm your appointment. Check your email for details.</p>
+                    </div>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="reveal">
+                    <div class="space-y-6">
+                        <!-- Contact cards -->
+                        <a href="https://wa.me/1234567890?text=Hi%20Ecoglos!%20I'd%20like%20to%20schedule%20an%20appointment." target="_blank" class="block bg-darkcard border border-darkborder rounded-2xl p-6 hover:border-primary/50 transition-all group">
+                            <div class="flex items-center gap-4">
+                                <div class="w-14 h-14 bg-green-500/10 rounded-xl flex items-center justify-center group-hover:bg-green-500/20 transition-colors">
+                                    <svg class="w-7 h-7 text-green-500" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-semibold text-white group-hover:text-primary transition-colors">WhatsApp</div>
+                                    <div class="text-sm text-gray-400">Chat with us instantly</div>
+                                </div>
+                                <i data-lucide="arrow-right" class="w-5 h-5 text-gray-500 ml-auto group-hover:text-primary group-hover:translate-x-1 transition-all"></i>
+                            </div>
+                        </a>
+
+                        <a href="tel:+11234567890" class="block bg-darkcard border border-darkborder rounded-2xl p-6 hover:border-primary/50 transition-all group">
+                            <div class="flex items-center gap-4">
+                                <div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                                    <i data-lucide="phone" class="w-7 h-7 text-primary"></i>
+                                </div>
+                                <div>
+                                    <div class="font-semibold text-white group-hover:text-primary transition-colors">Call Us</div>
+                                    <div class="text-sm text-gray-400">+1 (234) 567-890</div>
+                                </div>
+                                <i data-lucide="arrow-right" class="w-5 h-5 text-gray-500 ml-auto group-hover:text-primary group-hover:translate-x-1 transition-all"></i>
+                            </div>
+                        </a>
+
+                        <a href="mailto:info@ecoglos.com" class="block bg-darkcard border border-darkborder rounded-2xl p-6 hover:border-primary/50 transition-all group">
+                            <div class="flex items-center gap-4">
+                                <div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                                    <i data-lucide="mail" class="w-7 h-7 text-primary"></i>
+                                </div>
+                                <div>
+                                    <div class="font-semibold text-white group-hover:text-primary transition-colors">Email</div>
+                                    <div class="text-sm text-gray-400">info@ecoglos.com</div>
+                                </div>
+                                <i data-lucide="arrow-right" class="w-5 h-5 text-gray-500 ml-auto group-hover:text-primary group-hover:translate-x-1 transition-all"></i>
+                            </div>
+                        </a>
+
+                        <div class="bg-darkcard border border-darkborder rounded-2xl p-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center">
+                                    <i data-lucide="map-pin" class="w-7 h-7 text-primary"></i>
+                                </div>
+                                <div>
+                                    <div class="font-semibold text-white">Location</div>
+                                    <div class="text-sm text-gray-400">Miami, FL — Mobile Service Available</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Social Media -->
+                        <div class="bg-darkcard border border-darkborder rounded-2xl p-6">
+                            <h4 class="font-semibold text-white mb-4">Follow Us</h4>
+                            <div class="flex gap-3">
+                                <a href="https://instagram.com/ecoglos" target="_blank" class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center hover:scale-110 transition-transform">
+                                    <i data-lucide="instagram" class="w-5 h-5 text-white"></i>
+                                </a>
+                                <a href="https://facebook.com/ecoglos" target="_blank" class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center hover:scale-110 transition-transform">
+                                    <i data-lucide="facebook" class="w-5 h-5 text-white"></i>
+                                </a>
+                                <a href="https://tiktok.com/@ecoglos" target="_blank" class="w-12 h-12 bg-dark border border-darkborder rounded-xl flex items-center justify-center hover:scale-110 transition-transform">
+                                    <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 0010.86 4.43v-7.15a8.16 8.16 0 005.58 2.17V11.2a4.85 4.85 0 01-3.59-1.49 4.83 4.83 0 01.59-3.02z"/></svg>
+                                </a>
+                                <a href="https://youtube.com/@ecoglos" target="_blank" class="w-12 h-12 bg-red-600 rounded-xl flex items-center justify-center hover:scale-110 transition-transform">
+                                    <i data-lucide="youtube" class="w-5 h-5 text-white"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Business Hours -->
+                        <div class="bg-darkcard border border-darkborder rounded-2xl p-6">
+                            <h4 class="font-semibold text-white mb-4 flex items-center gap-2">
+                                <i data-lucide="clock" class="w-5 h-5 text-primary"></i>
+                                Business Hours
+                            </h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between"><span class="text-gray-400">Monday - Friday</span><span class="text-white">8:00 AM - 6:00 PM</span></div>
+                                <div class="flex justify-between"><span class="text-gray-400">Saturday</span><span class="text-white">9:00 AM - 4:00 PM</span></div>
+                                <div class="flex justify-between"><span class="text-gray-400">Sunday</span><span class="text-primary">Closed</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-darkborder py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                        <i data-lucide="car" class="w-4 h-4 text-black"></i>
+                    </div>
+                    <span class="font-bebas text-lg tracking-wide text-white">ECOGLOS <span class="text-primary">CAR DETAILING</span></span>
+                </div>
+                <div class="flex items-center gap-6">
+                    <a href="https://instagram.com/ecoglos" target="_blank" class="text-gray-500 hover:text-primary transition-colors"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+                    <a href="https://facebook.com/ecoglos" target="_blank" class="text-gray-500 hover:text-primary transition-colors"><i data-lucide="facebook" class="w-5 h-5"></i></a>
+                    <a href="https://tiktok.com/@ecoglos" target="_blank" class="text-gray-500 hover:text-primary transition-colors"><i data-lucide="music" class="w-5 h-5"></i></a>
+                    <a href="https://youtube.com/@ecoglos" target="_blank" class="text-gray-500 hover:text-primary transition-colors"><i data-lucide="youtube" class="w-5 h-5"></i></a>
+                </div>
+                <p class="text-sm text-gray-600">&copy; 2024 Ecoglos Car Detailing. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- WhatsApp Floating Button -->
+    <a href="https://wa.me/1234567890?text=Hi%20Ecoglos!%20I'm%20interested%20in%20your%20car%20detailing%20services.%20Can%20I%20get%20more%20information?" target="_blank" class="whatsapp-float" aria-label="Chat on WhatsApp">
+        <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+    </a>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+
+        // ========== MOBILE MENU ==========
+        const menuBtn = document.getElementById('menuBtn');
+        const closeMenuBtn = document.getElementById('closeMenu');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        menuBtn.addEventListener('click', () => mobileMenu.classList.add('open'));
+        closeMenuBtn.addEventListener('click', () => mobileMenu.classList.remove('open'));
+        mobileLinks.forEach(link => link.addEventListener('click', () => mobileMenu.classList.remove('open')));
+
+        // ========== NAVBAR SCROLL ==========
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('border-darkborder');
+                navbar.classList.remove('border-transparent');
+            } else {
+                navbar.classList.remove('border-darkborder');
+                navbar.classList.add('border-transparent');
+            }
+        });
+
+        // ========== REVEAL ON SCROLL ==========
+        const revealElements = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+        revealElements.forEach(el => observer.observe(el));
+
+        // ========== STATS COUNTER ==========
+        const statNumbers = document.querySelectorAll('.stat-number[data-target]');
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const target = parseInt(el.dataset.target);
+                    let current = 0;
+                    const increment = target / 60;
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= target) {
+                            el.textContent = target + (target === 100 ? '%' : '+');
+                            clearInterval(timer);
+                        } else {
+                            el.textContent = Math.floor(current) + (target === 100 ? '%' : '+');
+                        }
+                    }, 30);
+                    statsObserver.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+        statNumbers.forEach(el => statsObserver.observe(el));
+
+        // ========== GALLERY DATA ==========
+        const galleryItems = [
+            { type: 'image', src: 'http://static.photos/automotive/640x360/10', caption: 'Full PPF Installation — Lamborghini Urus', category: 'ppf' },
+            { type: 'image', src: 'http://static.photos/automotive/640x360/33', caption: 'Matte Black Custom Wrap — BMW M5', category: 'custom' },
+            { type: 'image', src: 'http://static.photos/automotive/640x360/55', caption: 'Ceramic Pro Coating — Porsche 911', category: 'ceramic' },
+            { type: 'image', src: 'http://static.photos/automotive/640x360/22', caption: 'Paint Correction & Detail — Mercedes AMG', category: 'detail' },
+            { type: 'video', poster: 'http://static.photos/automotive/640x360/77', caption: 'PPF Application Process', category: 'ppf', videoSrc: '' },
+            { type: 'image', src: 'http://static.photos/automotive/640x360/44', caption: 'Satin Chrome Delete — Tesla Model X', category: 'custom' },
+            { type: 'image', src: 'http://static.photos/automotive/640x360/15', caption: 'Interior Deep Clean — Range Rover', category: 'detail' },
+            { type: 'image', src: 'http://static.photos/automotive/640x360/66', caption: '9H Ceramic Shield — Audi RS7', category: 'ceramic' },
+            { type: 'video', poster: 'http://static.photos/automotive/640x360/88', caption: 'Before & After Transformation', category: 'detail', videoSrc: '' },
+        ];
+
+        const galleryGrid = document.getElementById('galleryGrid');
+        let currentFilter = 'all';
+        let currentLightboxIndex = 0;
+        let filteredItems = [...galleryItems];
+
+        function renderGallery(filter) {
+            currentFilter = filter;
+            filteredItems = filter === 'all' ? [...galleryItems] : galleryItems.filter(item => item.category === filter);
+            galleryGrid.innerHTML = '';
+
+            filteredItems.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = `gallery-item ${item.type === 'video' ? 'video-item' : ''}`;
+                div.dataset.index = index;
+
+                if (item.type === 'image') {
+                    div.innerHTML = `
+                        <img src="${item.src}" alt="${item.caption}" loading="lazy">
+                        <div class="overlay">
+                            <div>
+                                <p class="text-white font-medium text-sm">${item.caption}</p>
+                                <span class="text-primary text-xs uppercase font-semibold mt-1 inline-block">${item.category}</span>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    div.innerHTML = `
+                        <img src="${item.poster}" alt="${item.caption}" loading="lazy">
+                        <div class="play-btn">
+                            <svg class="w-6 h-6 text-black ml-1" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                        <div class="overlay">
+                            <div>
+                                <p class="text-white font-medium text-sm">${item.caption}</p>
+                                <span class="text-primary text-xs uppercase font-semibold mt-1 inline-block">${item.category} — video</span>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                div.addEventListener('click', () => openLightbox(index));
+                galleryGrid.appendChild(div);
+            });
+        }
+
+        renderGallery('all');
+
+        // Gallery Filter
+        document.querySelectorAll('.gallery-filter').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.gallery-filter').forEach(b => {
+                    b.classList.remove('bg-primary', 'text-black');
+                    b.classList.add('bg-darkcard', 'border', 'border-darkborder', 'text-gray-400');
+                });
+                btn.classList.add('bg-primary', 'text-black');
+                btn.classList.remove('bg-darkcard', 'border-darkborder', 'text-gray-400');
+                renderGallery(btn.dataset.filter);
+            });
+        });
+
+        // ========== LIGHTBOX ==========
+        const lightbox = document.getElementById('lightbox');
+        const lightboxContent = document.getElementById('lightboxContent');
+        const lightboxCaption = document.getElementById('lightboxCaption');
+
+        function openLightbox(index) {
+            currentLightboxIndex = index;
+            const item = filteredItems[index];
+            lightboxContent.innerHTML = '';
+
+            if (item.type === 'image') {
+                lightboxContent.innerHTML = `<img src="${item.src}" alt="${item.caption}" class="rounded-xl">`;
+            } else {
+                lightboxContent.innerHTML = `
+                    <div class="text-center">
+                        <img src="${item.poster}" alt="${item.caption}" class="rounded-xl max-w-full">
+                        <p class="text-primary mt-4 font-medium">Video Preview — ${item.caption}</p>
+                    </div>
+                `;
+            }
+            lightboxCaption.textContent = item.caption;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) closeLightbox();
+        });
+
+        document.getElementById('lightboxPrev').addEventListener('click', (e) => {
+            e.stopPropagation();
+            currentLightboxIndex = (currentLightboxIndex - 1 + filteredItems.length) % filteredItems.length;
+            openLightbox(currentLightboxIndex);
+        });
+
+        document.getElementById('lightboxNext').addEventListener('click', (e) => {
+            e.stopPropagation();
+            currentLightboxIndex = (currentLightboxIndex + 1) % filteredItems.length;
+            openLightbox(currentLightboxIndex);
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (!lightbox.classList.contains('active')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') document.getElementById('lightboxPrev').click();
+            if (e.key === 'ArrowRight') document.getElementById('lightboxNext').click();
+        });
+
+        // ========== BOOKING FORM ==========
+        const bookingForm = document.getElementById('bookingForm');
+        const bookingSuccess = document.getElementById('bookingSuccess');
+
+        bookingForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            bookingForm.style.display = 'none';
+            bookingSuccess.classList.remove('hidden');
+            bookingSuccess.style.animation = 'fadeInUp 0.6s ease-out';
+
+            // Re-create icons for the success message
+            lucide.createIcons();
+        });
+
+        // ========== SET MIN DATE ==========
+        const dateInput = document.querySelector('input[type="date"]');
+        if (dateInput) {
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.setAttribute('min', today);
+        }
+    </script>
+<script src="https://deepsite.hf.co/deepsite-badge.js"></script>
+</body>
+</html>
